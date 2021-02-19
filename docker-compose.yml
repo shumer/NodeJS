@@ -1,0 +1,35 @@
+version: '3'
+services:
+  mariadb:
+    image: 'wodby/mariadb:10.5'
+    environment:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+    hostname: mariadb
+    volumes:
+      - /var/lib/mysql
+    networks:
+      dockerpn:
+        ipv4_address: '${NETWORK}.10'
+  nodejs:
+    image: 'node:14'
+    container_name: '${COMPOSE_PROJECT_NAME}_nodejs'
+    volumes:
+      - './:/usr/src/app'
+    tty: true
+    working_dir: /usr/src/app
+    networks:
+      dockerpn:
+        ipv4_address: '${NETWORK}.23'
+      shared: null
+networks:
+  dockerpn:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: '${NETWORK}.0/24'
+  shared:
+    external:
+      name: shared
